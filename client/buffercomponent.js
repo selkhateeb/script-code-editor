@@ -10,7 +10,7 @@ goog.require('goog.editor.Field');
  * demonstrates how this components uses a css which will be included
  * automatically in the produced html
  */
-//tic.requireCss('example.client.css');
+tic.requireCss('editor.style');
 
 /**
  * @param {goog.dom.DomHelper=} opt_domHelper Optional DOM helper.

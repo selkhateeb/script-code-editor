@@ -1,0 +1,20 @@
+/*
+ tic.requireCss('editor.style');
+*/
+@tic.provideCss 'editor.style';
+
+.red {
+    color: red;
+    font-family: monospace;
+}
+
+.border{
+    border-right: 1px solid black;
+    width: 0px !important;
+    display: inline !important;
+}
+
+.point {
+    width: 1px;
+    display: inline-block;
+}
