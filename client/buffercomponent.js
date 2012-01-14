@@ -5,6 +5,7 @@ goog.require('editor.Buffer');
 goog.require('tic');
 goog.require('goog.ui.Component');
 goog.require('goog.editor.Field');
+goog.require('editor.Cursor');
 
 /*
  * demonstrates how this components uses a css which will be included
@@ -18,9 +19,9 @@ tic.requireCss('editor.style');
  * @extends {goog.ui.Component}
  */
 editor.BufferComponent = function(opt_domHelper){
-//    goog.ui.Component.call(this, opt_domHelper);
     goog.base(this, opt_domHelper);
     this.buffer = new editor.Buffer();
+    this.buffer.registerPlugin(editor.Cursor);
 };
 goog.inherits(editor.BufferComponent, goog.ui.Component);
 
@@ -36,18 +37,12 @@ editor.BufferComponent.prototype.Fragment = {
  * Overrides the base.createDom method
  */
 editor.BufferComponent.prototype.createDom = function(){
-//    var div = this.getDomHelper().createElement('div');
-//    div.setAttribute('class', 'red');
     var div = this.getDomHelper().createDom('div', {
 	'id': this.makeId(this.Fragment.frame),
 	'class': 'red'
     });
 
-    //Demonstrate how to use the template
-//    div.innerHTML = examples.client.template.helloWorld();
-    
     this.element_ = div;
-//    this.isUserLoggedIn()
 };
 
 
@@ -57,12 +52,12 @@ editor.BufferComponent.prototype.createDom = function(){
 editor.BufferComponent.prototype.enterDocument = function(){
     goog.base(this, 'enterDocument');
     this.buffer.insert('this is awsome');
-    this.buffer.pointPosition = new editor.Buffer.Point(0, 3);
+    this.buffer.cursor.column = 3;
     this.renderBuffer();
     var timer = new goog.Timer(450);
     timer.dispatchTick = goog.bind(this.blinkPoint_, this);
     timer.start();
-    goog.events.listen(this.buffer, editor.Buffer.EventType.AFTER_POINT_CHANGE, this.bufferChange_, false, this);
+    goog.events.listen(this.buffer, editor.Cursor.EventType.AFTER_CURSOR_CHANGE, this.bufferChange_, false, this);
 
     goog.events.listen(this.getDomHelper().getDocument().body, goog.events.EventType.KEYDOWN, this.handleKeyDown_, false, this);
     goog.events.listen(this.getDomHelper().getDocument().body, goog.events.EventType.KEYPRESS, this.handleKeyPress_, false, this);
@@ -93,9 +88,9 @@ editor.BufferComponent.prototype.renderBuffer = function(){
     this.getDomHelper().removeChildren(frame);
 
     for(var i=0; i<this.buffer.getLines().length; i++){
-	var line = this.buffer.getLines()[i];
-	if(i == this.buffer.pointPosition.line){
-	    var cursor = this.buffer.pointPosition.column;
+	var line = this.buffer.getLine(i);
+	if(i == this.buffer.cursor.line){
+	    var cursor = this.buffer.cursor.column;
 	    var part1 =  this.getDomHelper().createDom('span', null, line.substring(0, cursor));
 	    var part2 =  this.getDomHelper().createDom('span', null, line.substring(cursor));
 	    var point =  this.getDomHelper().createDom('span', {
@@ -114,8 +109,8 @@ editor.BufferComponent.prototype.renderBuffer = function(){
  * comments
  */
 editor.BufferComponent.prototype.handleKeyDown_ = function(e){
-    if(e.keyCode == goog.events.KeyCodes.RIGHT) this.buffer.forwardChar();
-    if(e.keyCode == goog.events.KeyCodes.LEFT) this.buffer.backwardChar();
+    if(e.keyCode == goog.events.KeyCodes.RIGHT) this.buffer.cursor.forwardChar();
+    if(e.keyCode == goog.events.KeyCodes.LEFT) this.buffer.cursor.backwardChar();
 
 };
 
