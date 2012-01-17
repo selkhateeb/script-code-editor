@@ -8,4 +8,7 @@ editor.client.entrypoint.onModuleLoad = function(){
 
     var component = new editor.BufferComponent();
     component.render();
+    buffer = component.buffer;
 }
+
+var buffer = null;
