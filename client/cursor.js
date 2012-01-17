@@ -79,11 +79,48 @@ editor.Cursor.prototype.backwardChar = function(){
 	//Move to previous line
 	if(this.line > 0){
 	    this.line-= 1;
-	    this.column = this.getLine(this.line).length - 1;
+	    this.column = this.buffer.getLine(this.line).length - 1;
 	} else {
 	    this.column = 0;
 	}
     }
+    var afterEvent = new goog.events.Event(editor.Cursor.EventType.AFTER_CURSOR_CHANGE);
+    afterEvent.cursor = this;
+    this.buffer.dispatchEvent(afterEvent);
+};
+
+/**
+ * Moves the cursor to the beginning of current line
+ */
+editor.Cursor.prototype.beginningOfLine = function(){
+    this.fireBeforeCursorChangeEvent_();
+    this.column = 0;
+    this.fireAfterCursorChangeEvent_();
+};
+
+/**
+ * Moves the cursor to the end of current line
+ */
+editor.Cursor.prototype.endOfLine = function(){
+    this.fireBeforeCursorChangeEvent_();
+    var line = this.buffer.getLine(this.line);
+    this.column = line.length > 0? (line.length) : 0;
+    this.fireAfterCursorChangeEvent_();
+};
+
+/**
+ * Fires the editor.Cursor.EventType.BEFORE_CURSOR_CHANGE event
+ */
+editor.Cursor.prototype.fireBeforeCursorChangeEvent_ = function(){
+    var beforeEvent = new goog.events.Event(editor.Cursor.EventType.BEFORE_CURSOR_CHANGE);
+    beforeEvent.cursor = this;
+    this.buffer.dispatchEvent(beforeEvent);
+};
+
+/**
+ * Fires the editor.Cursor.EventType.AFTER_CURSOR_CHANGE event
+ */
+editor.Cursor.prototype.fireAfterCursorChangeEvent_ = function(){
     var afterEvent = new goog.events.Event(editor.Cursor.EventType.AFTER_CURSOR_CHANGE);
     afterEvent.cursor = this;
     this.buffer.dispatchEvent(afterEvent);
